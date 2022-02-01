@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>3D Interactive Game</title>
+    <!-- <meta charset="utf-8">
+    <meta name="description" content="HexGL is a futuristic racing game built by Thibaut Despoulain (BKcore) using HTML5, Javascript and WebGL. Come challenge your friends on this fast-paced 3D game!">
+    <meta property="og:title" content="HexGL, the HTML5 futuristic racing game." />
+    <meta property="og:type" content="game" />
+    <meta property="og:url" content="http://hexgl.bkcore.com/" />
+    <meta property="og:image" content="http://hexgl.bkcore.com/image.png" />
+    <meta property="og:site_name" content="HexGL by BKcore" />
+    <meta property="fb:admins" content="1482017639" />
+    <link rel="icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png">
+    <link rel="shortcut icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png"> -->
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="./frontend css/multi.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="./frontend css/fonts.css" type="text/css" charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        
+        canvas {
+            pointer-events: none;
+            width: 100%;
+        }
+        
+        #overlay {
+            position: absolute;
+            z-index: 9999;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-firestore.js"></script>
+   
+</head>
+
+<body>
+
+    <div id="step-1">
+
+        <div id="global"></div>
+
+        <div id="title">
+
+            <img data-toggle="modal" data-target="#ProfileModal" style="z-index: 9999 !important;float: right;margin-right: 30px !important;" width="55" height="55" src="./assets/profile-removebg-preview.png" alt="Profile">
+
+        </div>
+        <div id="menucontainer">
+            <div id="menu">
+                <div onclick="StartGame()" id="start">Start</div>
+                <div id="scores" id="s-controlType" data-toggle="modal" data-target="#ScoreModal">Score Board</div>
+                <div id="s-controlType" data-toggle="modal" data-target="#keyboardModal" >Controls: Keyboard</div>
+                <div data-toggle="modal" data-target="#exampleModal" href="#" >
+                    Login
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div  class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md">
+                <div style="background: #541268 !important;" class="modal-content">
+                    <div class="modal-header">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#login-form"> Login <span
+                    class="glyphicon glyphicon-user"></span></a></li>
+                            <li><a data-toggle="tab" href="#registration-form"> Register <span
+                    class="glyphicon glyphicon-pencil"></span></a></li>
+                        </ul>
+                    </div>
+                    <div class="modal-body">
+                        <div class="tab-content">
+                            <div id="login-form" class="tab-pane fade active">
+                                <form onsubmit="LoginFormSubmit(event)">
+                                    <div class="form-group">
+                                        <label for="email">Email:</label>
+                                        <input type="email" class="form-control" id="email" placeholder="Enter email" name="Logemail">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="pwd">Password:</label>
+                                        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="Logpwd">
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="remember"> Remember me</label>
+                                    </div>
+                                    <button class="btn btn-default">Login</button>
+                                </form>
+                            </div>
+                            <div id="registration-form" class="tab-pane fade">
+                                <form onsubmit="RegisterFormSubmit(event)">
+                                    <div class="form-group">
+                                        <label for="name">Your Name:</label>
+                                        <input type="text" class="form-control" id="name" placeholder="Enter your name" name="name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newemail">Email:</label>
+                                        <input type="email" class="form-control" id="newemail" placeholder="Enter new email" name="email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="newpwd">Password:</label>
+                                        <input type="password" class="form-control" id="newpwd" placeholder="New password" name="pwd">
+                                    </div>
+                                    <button type="submit" class="btn btn-default">Register</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="keyboardModal" tabindex="-1" role="dialog" aria-labelledby="KeyboardModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <div style="background: #541268 !important;" class="modal-content">
+                    <div class="modal-body">
+                        <div class="tab-content">
+                            <h1 style="margin-bottom: 10%;text-align: center;color:black;"> <strong> KeyBoard Keys </strong> </h1>
+
+                            <div style="display: flex;flex-direction: row;justify-content: space-between;">
+
+                                <img class="keyboard-Keys" onclick="setKey(event)" style="width: 50%;height: 45%;margin-top: 10%;" src="./assets/arrowkeys-removebg-preview.png" alt="Arrow Keys">
+                                <img class="keyboard-Keys" onclick="setKey(event)" style="width: 50%;height: 45%;margin-top: 10%;" src="./assets/wasdkeys-removebg-preview.png" alt="WASD Keys">
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="ScoreModal" tabindex="-1" role="dialog" aria-labelledby="KeyboardModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <div style="background: #541268 !important;" class="modal-content">
+                    <div class="modal-body">
+                        <div id="ScoreBoard" class="tab-content">
+                            <h1 style="margin-bottom: 10%;text-align: center;color:black;"> <strong> SCOREBOARD </strong> </h1>
+                            
+                            <div style="display: flex;flex-direction: row">
+                                <!-- <em>1)</em> -->
+                                <strong style="float: left;">Muhammad Shayan</strong>
+                                <p style="margin-left: auto;">180</p>
+                            </div>
+                            <div style="display: flex;flex-direction: row">
+                                <!-- <em>1)</em> -->
+                                <strong>Shayan Abid</strong>
+                                <p style="margin-left: auto;">100</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="ProfileModal" tabindex="-1" role="dialog" aria-labelledby="KeyboardModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <div style="background: #541268 !important;" class="modal-content">
+                    <div class="modal-body">
+                        <div class="tab-content">
+                            <h1 style="margin-bottom: 10%;text-align: center;color:black;"> <strong> Profile </strong> </h1>
+
+                            <div style="justify-content: center;flex-direction: row">
+                                <div style="width: 100% !important;text-align: -webkit-center;">
+                                    <img width="30%" height="30%" style="width:30%;height:35%;margin-top:-5%;" src="./assets/profile-removebg-preview.png" alt="Arrow Keys">
+                                </div>
+                                <!-- <br> -->
+                                <div style="width: 100% !important;margin-top: 10%;">
+                                    <ul style="list-style-type: none;" class="ProfileValues">
+                                        <li style="flex-direction: row;">
+                                            <div style="display: flex;flex-direction: row;">
+                                                <strong style="color: black;">Name:</strong> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                <p id="PlayerName">Anonymous</p>
+                                            </div>
+
+                                            <div style="display: flex;flex-direction: row;">
+                                                <strong style="color: black;">Email:</strong> &nbsp;&nbsp;&nbsp;&nbsp;
+                                                <p id="PlayerEmail">anonymous@gmail.com</p>
+                                            </div>
+                                            <div>
+                                                <table id="Profile-score" class="Profile-score">
+                                                    <tr style="color: black;font-weight: bold">
+                                                        <th>Date</th>
+                                                        <th>Score</th>
+
+                                                    </tr>
+                                            
+                                                    
+                                                </table>
+                                            </div>
+
+                                        </li>
+                                        
+                                    </ul>
+                                </div>
+
+
+                            </div>
+                            <button onclick="LogOut()" style="border: 3px solid black;border-radius: 10px;background: #541268;font-weight: bold;margin-left: 7%;margin-top: 2%;">Logout</button>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+        <script>
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyAKUYAuxZTTEhetJBFSs4bjF4-4eSmALk8",
+                authDomain: "d-running-game.firebaseapp.com",
+                projectId: "d-running-game",
+                storageBucket: "d-running-game.appspot.com",
+                messagingSenderId: "768373024540",
+                appId: "1:768373024540:web:6d487623b17c15cd31fcd9",
+                measurementId: "G-L9K9B2HP44"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+
+            const db = firebase.firestore();
+        </script>
+
+        <!-- Cotroll all the key press and database -->
+        <script src="Javascript_frontend.js"></script>
+
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script type="module">
+
+        </script>
+
+</body>
+
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Interactive Game</title>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-firestore.js"></script>
+</head>
+<body>
+    <script type='text/javascript' src='./node_modules/dat.gui/build/dat.gui.js'></script>
+    <script type="module" src="main.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAKUYAuxZTTEhetJBFSs4bjF4-4eSmALk8",
+            authDomain: "d-running-game.firebaseapp.com",
+            projectId: "d-running-game",
+            storageBucket: "d-running-game.appspot.com",
+            messagingSenderId: "768373024540",
+            appId: "1:768373024540:web:6d487623b17c15cd31fcd9",
+            measurementId: "G-L9K9B2HP44"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        const db = firebase.firestore();
+    </script>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</body>
+</html>
