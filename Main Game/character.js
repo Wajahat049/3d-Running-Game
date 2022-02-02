@@ -96,6 +96,7 @@ class Character{
     }
     enablePlayerControls(){
         addEventListener('keydown', (e) => {
+            console.log(e.key)
             switch(e.key){
                 case this.states['jump'].keyBind:
                     this.states['jump'].state.enter()
@@ -109,10 +110,13 @@ class Character{
             }
         })
     }
+    disablePlayerControls(){
+        removeEventListener('keydown', () => {})
+    }
     addToWorld(scene, camera, renderer, pos){
         this.position.copy(pos)
         scene.add(this.model)
-        scene.add( this.helper )
+        // scene.add( this.helper )
         this.createAnimationMixer(renderer)
     }
 }

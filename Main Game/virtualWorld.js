@@ -5,11 +5,11 @@ import * as dat from "./node_modules/dat.gui/build/dat.gui.module.js"
 
 class VirtualWorld {
     constructor(){
-        this.gui = new dat.GUI()
+        // this.gui = new dat.GUI()
         this.createScene()
         this.createCamera()
         this.createRenderer()
-        this.enableOrbitControls()
+        // this.enableOrbitControls()
     }
     createScene(){
         this.scene = new THREE.Scene()
@@ -58,7 +58,7 @@ class VirtualWorld {
         let distance = 0
         let angle = Math.PI/3
         let penumbra = 0.1
-        let decay = 2
+        let decay = 1
         this.spotLight = new THREE.SpotLight( color, intensity, distance, angle, penumbra, decay )
         this.spotLight.position.set( 5, 5, 5 );
         this.spotLight.castShadow = true

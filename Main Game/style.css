@@ -1,0 +1,35 @@
+.Game-over{
+    position: absolute;
+    top: 40%;
+    left: 35%;
+    font-size: 150%!important; 
+    color: white;
+    background-color:#711b8b;
+    padding: 1%;
+    display: none;
+
+}
+
+.Score{
+    position: absolute;
+    top: -1%;
+    left: 85%;
+    /* font-size: 400%!important;  */
+    color: white;
+    /* background-color:#711b8b; */
+    padding: 1%;
+    /* display: none; */
+
+}
+
+.ScoreValue{
+    position: absolute;
+    top: 2%;
+    left: 93%;
+    font-size: 200%!important; 
+    color: white;
+    /* background-color:#711b8b; */
+    padding: 1%;
+    /* display: none; */
+
+}

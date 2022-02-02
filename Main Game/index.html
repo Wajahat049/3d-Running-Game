@@ -7,6 +7,8 @@
     <title>3D Interactive Game</title>
     <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-firestore.js"></script>
+    <link rel="stylesheet" href="style.css" type="text/css" charset="utf-8">
+    
 </head>
 <body>
     <script type='text/javascript' src='./node_modules/dat.gui/build/dat.gui.js'></script>
@@ -33,5 +35,12 @@
             padding: 0;
         }
     </style>
+    <div id="game-over" class="Game-over">
+    <h1 >GAME OVER</h1>
+    <!-- <h2>Your Final Score is</h2> -->
+</div>
+    <h1  id="SCORE" class="Score">Score:</h1>
+    <span id="score" class="ScoreValue"></span>
+
 </body>
 </html>

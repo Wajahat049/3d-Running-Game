@@ -3,6 +3,7 @@ import { VirtualWorld } from "./virtualWorld.js"
 import { State, Character} from "./character.js"
 import {Map, Obstacle} from "./map.js"
 
+
 let gameStarted = false
 let score = 0
 let gravity = new THREE.Vector3(0, -0.4, 0)
@@ -11,11 +12,27 @@ let lightStartPos = new THREE.Vector3(0, 15, 3)
 let cameraStartPos = new THREE.Vector3(6, 10, 18)
 let cameraStartLookAt = new THREE.Vector3(0, 0, -10)
 let charLowerBound = new THREE.Vector3(-10, 0, -Infinity)
-let charUpperBound = new THREE.Vector3(10, 40, 50)
-let runForwardKey = 'w'
+let charUpperBound = new THREE.Vector3(10, 15, 50)
+let runForwardKey = ''
 let jumpKey = 'w'
 let leftStrafeKey = 'a'
 let rightStrafeKey = 'd'
+
+const Player = localStorage.getItem("Player")
+    const id = JSON.parse(Player).Email.split("@")
+db.collection("KeyBoard_Keys").doc(`${id[0]}`).get().then((snap)=>{
+    console.log("KEYSSSSS",snap.data().key)
+    if(snap.data().key=="wasd"){
+        jumpKey = 'w'
+        leftStrafeKey = 'a'
+        rightStrafeKey = 'd'
+    }
+    else{
+        jumpKey = 'ArrowUp'
+        leftStrafeKey = 'ArrowLeft'
+        rightStrafeKey = 'ArrowRight'
+    }
+})
 
  async function main() {
     //Creating World
@@ -26,7 +43,7 @@ let rightStrafeKey = 'd'
     camera.position.copy(cameraStartPos)
     camera.lookAt(cameraStartLookAt)
     spotLight.position.copy(lightStartPos)
-    spotLight.angle = Math.PI/2.4
+    spotLight.angle = Math.PI/2.2
 
     //Organizing Canvas
     // const ctx = renderer.domElement.getContext('2d')
@@ -35,27 +52,32 @@ let rightStrafeKey = 'd'
     //Creating Obstacles
     const spikeObstacle = new Obstacle('./resources/SpikeTrap.fbx', 0.01)
     await spikeObstacle.loadPromise
+
+    const coinObstacle = new Obstacle('./resources/coin 1.fbx', 0.05, 'coin')
+    await coinObstacle.loadPromise
     
     //Creating Map
     const map = new Map()
     map.createGroup()
     map.createTunnel()
-    map.spreadInMap(spikeObstacle)
+    map.spreadInMap(spikeObstacle, 40, 2, 0)
+    map.spreadInMap(coinObstacle, 20, 1, 5)
     map.addToWorld(scene, camera, renderer)
 
     //Creating States
-    const runState = new State('./resources/Running.fbx', new THREE.Vector3(0,0,-0.5))
+    const runState = new State('./resources/Running.fbx', new THREE.Vector3(0,0,-0.8))
     await runState.loadPromise
+    runState.animationSpeed = 1.5
 
-    const jumpState = new State('./resources/Jumping.fbx', new THREE.Vector3(0,0.8,0), 20)
+    const jumpState = new State('./resources/Jumping.fbx', new THREE.Vector3(0,0.8,0), 18)
     await jumpState.loadPromise
     jumpState.animationSpeed = 1.5
 
-    const leftStrafeState = new State('./resources/Left Strafe.fbx', new THREE.Vector3(-0.5,0,0), 5)
+    const leftStrafeState = new State('./resources/Left Strafe.fbx', new THREE.Vector3(-0.5,0,0), 20)
     await leftStrafeState.loadPromise
     leftStrafeState.animationSpeed = 1
 
-    const rightStrafeState = new State('./resources/Right Strafe.fbx', new THREE.Vector3(0.5,0,0), 5)
+    const rightStrafeState = new State('./resources/Right Strafe.fbx', new THREE.Vector3(0.5,0,0), 20)
     await rightStrafeState.loadPromise
 
     //Creating Character
@@ -103,12 +125,21 @@ main()
 
 
 function detectCollisions(char, map) {
+loop1:
     for (let key in map.obstacleHitBoxes){
         for (let hb of map.obstacleHitBoxes[key]){
             let collision = char.hitBox.intersectsBox(hb)
             if (collision){
                 if (key == 'spike'){
                     endGame(char)
+                    map.obstacleHitBoxes={}
+                    break
+                }
+                else if (key == 'coin'){
+                    score += 100
+                    map.group.remove(hb.userData.sourceObject)
+                    // map.obstacleHitBoxes={}
+                    break
                 }
             }
         }
@@ -145,6 +176,7 @@ function updateScore() {
     let scoreMultiplier = 1
     if (gameStarted){
         score += 1*scoreMultiplier
+        document.getElementById("score").innerHTML=score
     }
 }
 
@@ -182,14 +214,20 @@ function startGame(mainChar) {
 }
 function endGame(mainChar) {
   
-    
     gameStarted = false
     mainChar.states['runForward'].state.exit()
-    removeEventListener('keydown', () => {})
+    mainChar.disablePlayerControls()
     const Player = localStorage.getItem("Player")
     const id = JSON.parse(Player).Email.split("@")
+    console.log("AAAAA",id)
+    
     db.collection("Scores").doc(`${id[0]}`).get().then((snap)=>{
-            const AllTheScoresGet = snap.data().AllScores
+        console.log("KJLJLJLJ",snap.exists)
+        var AllTheScoresGet=[]
+        if(snap.exists){
+            AllTheScoresGet = snap.data().AllScores
+        }
+        console.log("PPPPPPPPP",AllTheScoresGet)
             AllTheScoresGet.push(score)
             console.log("AAAAA",AllTheScoresGet)
     
@@ -197,4 +235,7 @@ function endGame(mainChar) {
                 AllScores:AllTheScoresGet
             })
     })
+    const gameOveElement =  document.getElementById("game-over")
+    gameOveElement.style.display = "block"
+    gameOveElement.innerHTML+=`<h2>Your Final Score is:${score}</h2>`
 }

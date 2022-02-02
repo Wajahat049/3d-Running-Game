@@ -4,7 +4,7 @@ import {FBXLoader} from 'https://unpkg.com/three@0.126.1/examples/jsm/loaders/FB
 
 class Map{
     constructor(){
-        this.radius = 15
+        this.radius = 20
         this.length = 20
         this.radialSegments = 32
         this.divisions = 32
@@ -48,24 +48,38 @@ class Map{
     createGroup(){
         this.group = new THREE.Group()
     }
-    spreadInMap(obj){
+    spreadInMap(obj, gap=40, num=1, height=0){
         const hitBoxes = []
-        this.obstacleGap = 40
+        this.obstacleGap = gap
+        this.numOfObs = num
         const possibleXValues = [-1,0,1]
         for (let i=0; i < Math.floor(this.length*this.meshCount/this.obstacleGap); i++){
-            const clone = obj.model.clone()
-            let y = 0
-            let x = possibleXValues[Math.floor(Math.random() * possibleXValues.length)] * 2/3*this.radius
-            let z = -50 -i * this.obstacleGap
-            const pos = new THREE.Vector3(x,y,z)
-            this.placeModel(clone, pos)
-            //Creating HitBoxes using Box3
-            const hitBox = new THREE.Box3()
-            hitBox.setFromObject(clone)
-            hitBoxes.push(hitBox)
-            //Box3 Helper
-            const helper = new THREE.Box3Helper( hitBox, 0xffff00 );
-            this.group.add( helper )
+            for (let j=0; j < this.numOfObs; j++) {
+                const clone = obj.model.clone()
+                let y = height
+                let x = possibleXValues[Math.floor(Math.random() * possibleXValues.length)] * 10
+                let z = -50 -i * this.obstacleGap
+                const pos = new THREE.Vector3(x,y,z)
+                this.placeModel(clone, pos)
+                //Creating HitBoxes using Box3
+                const hitBox = new THREE.Box3()
+                hitBox.setFromObject(clone)
+                hitBox.userData = {sourceObject: clone}
+                //Checking for overlap
+                for (let key in this.obstacleHitBoxes){
+                    for (let hb of this.obstacleHitBoxes[key]){
+                        let overlap = hitBox.intersectsBox(hb)
+                        if (overlap){
+                            this.group.remove(hitBox)
+                            continue
+                        }
+                    }
+                }
+                hitBoxes.push(hitBox)
+                //Box3 Helper
+                // const helper = new THREE.Box3Helper( hitBox, 0xffff00 );
+                // this.group.add( helper )
+            }
         }
         this.obstacleHitBoxes[obj.type] = hitBoxes
         console.log(this.obstacleHitBoxes)

@@ -20,6 +20,7 @@ function RegisterFormSubmit(e) {
         name = ""
         email = ""
         password = ""
+        alert("Register Successfully")
 
     } else {
         alert("Fill all the fields")
@@ -93,35 +94,34 @@ const id = JSON.parse(Player).Email.split("@")
 
 }
 
-// const Player = localStorage.getItem("Player")
-// if(Player){
-// const playerName = document.getElementById("PlayerName")
-// playerName.innerHTML = JSON.parse(Player).Name
-// const playerEmail = document.getElementById("PlayerEmail")
-// playerEmail.innerHTML = JSON.parse(Player).Email
-//     // console.log("Player",)
-// const id = JSON.parse(Player).Email.split("@")
-// db.collection("Scores").doc(`${id[0]}`).get().then((e) => {
+const Player = localStorage.getItem("Player")
+if(Player){
+const playerName = document.getElementById("PlayerName")
+playerName.innerHTML = JSON.parse(Player).Name
+const playerEmail = document.getElementById("PlayerEmail")
+playerEmail.innerHTML = JSON.parse(Player).Email
+    // console.log("Player",)
+const id = JSON.parse(Player).Email.split("@")
+db.collection("Scores").doc(`${id[0]}`).get().then((e) => {
 
-//     const Scores = e.data()
-//     console.log("SSSSS",Scores.AllScores)
-//     // Object.entries(time).forEach(
-//     //     entry => {
-//     //         const myDate = new Date(entry[1].seconds * 1000)
-//     //         document.getElementById("Profile-score").innerHTML += `<tr>
-//     //                             <td>${myDate.getDate()+", "+monthNames[myDate.getMonth()]+", "+myDate.getFullYear()}</td>
-//     //                             <td>${entry[0]}</td>
+    const Scores = e.data()
+    console.log("SSSSS",Scores.AllScores)
+    Scores.AllScores.forEach(
+        entry => {
+            
+            document.getElementById("Profile-score").innerHTML += `<tr>
+                
+                                <td> ${Scores.AllScores.indexOf(entry)+1})      ${ entry}</td>
+                            </tr>`
 
-//     //                         </tr>`
-
-//     //         console.log("Date", myDate.getDate(), monthNames[myDate.getMonth()], myDate.getFullYear())
-//     //     }
-//     // )
-
+            // console.log("Date", myDate.getDate(), monthNames[myDate.getMonth()], myDate.getFullYear())
+        }
+    )
 
 
-// })
-// }
+
+})
+}
 
 db.collection("Scores").get().then(snapshot=>{
         snapshot.forEach((doc)=>{
