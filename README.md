@@ -17,6 +17,6 @@ The database used is, <br/>
 
 1) Player can signup and login. <br/>
 2) Scorecard of all the Players is shown. <br/>
-3) Player Profile is also shown with his Scores. <br/>
+3) Player's Profile is also shown with his scores. <br/>
 4) Player can turn left and right and also jump over obstacles. <br/>
 5) Player's score is incremented as it's running and it multiplies when a Player get a coin. <br/>
